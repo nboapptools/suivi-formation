@@ -21,8 +21,6 @@
     }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
     body { display: flex; min-height: 100vh; background: var(--bg); color: var(--text); }
-
-    /* Sidebar */
     aside { width: 250px; background: var(--sidebar-bg); color: #fff; display: flex; flex-direction: column; padding: 20px 14px; flex-shrink: 0; }
     .brand { display: flex; align-items: center; gap: 10px; font-size: 1.2rem; font-weight: 700; margin-bottom: 28px; padding: 0 8px; }
     .brand-badge { background: var(--primary); padding: 4px 8px; border-radius: 6px; font-size: 0.85rem; }
@@ -30,24 +28,19 @@
     .nav-btn { background: transparent; border: none; color: #cbd5e1; text-align: left; padding: 12px 14px; border-radius: 8px; cursor: pointer; font-size: 0.95rem; display: flex; align-items: center; gap: 10px; transition: 0.15s; }
     .nav-btn:hover { background: var(--sidebar-hover); color: #fff; }
     .nav-btn.active { background: var(--primary); color: #fff; font-weight: 600; }
-
-    /* Main */
     main { flex: 1; display: flex; flex-direction: column; overflow-x: hidden; }
     header { background: var(--card); padding: 18px 28px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
     header h1 { font-size: 1.35rem; font-weight: 700; }
     header p { font-size: 0.85rem; color: var(--muted); margin-top: 2px; }
     .btn { background: var(--primary); color: #fff; border: none; padding: 10px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.9rem; transition: 0.15s; }
-    .btn:hover { background: var(--primary-hover); }
+    .btn:hover:not(:disabled) { background: var(--primary-hover); }
     .btn:disabled { opacity: 0.45; cursor: not-allowed; }
     .btn-sm { padding: 6px 12px; font-size: 0.82rem; border-radius: 6px; }
     .btn-outline { background: #fff; color: var(--text); border: 1px solid var(--border); }
     .btn-outline:hover:not(:disabled) { background: #f8fafc; border-color: #cbd5e1; }
     .btn-outline.active-month { background: #eff6ff; border-color: var(--primary); color: var(--primary); font-weight: 700; }
     .btn-danger { background: var(--danger); color: #fff; }
-
     .content { padding: 24px 28px; display: flex; flex-direction: column; gap: 24px; }
-
-    /* KPI Cards */
     .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; }
     .card { background: var(--card); border-radius: 12px; padding: 18px 20px; border: 1px solid var(--border); box-shadow: 0 1px 2px rgba(0,0,0,0.03); }
     .kpi-label { font-size: 0.75rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
@@ -55,8 +48,6 @@
     .kpi-sub { font-size: 0.82rem; color: var(--muted); }
     .progress-bar { width: 100%; height: 8px; background: #e2e8f0; border-radius: 99px; overflow: hidden; margin-top: 10px; }
     .progress-fill { height: 100%; background: var(--primary); transition: width 0.3s; }
-
-    /* Gantt Chronologique Mensuel */
     .gantt-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 12px; }
     .gantt-controls { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
     .month-badge { font-size: 1rem; font-weight: 700; min-width: 155px; text-align: center; text-transform: capitalize; color: var(--primary); background: #eff6ff; padding: 6px 12px; border-radius: 8px; border: 1px solid #bfdbfe; }
@@ -64,7 +55,6 @@
     .legend { display: flex; gap: 16px; font-size: 0.82rem; color: var(--muted); }
     .legend span { display: flex; align-items: center; gap: 6px; }
     .dot { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
-
     .gantt-wrapper { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; }
     table.gantt { width: 100%; border-collapse: collapse; min-width: 720px; font-size: 0.84rem; }
     table.gantt th, table.gantt td { border-bottom: 1px solid var(--border); border-right: 1px solid #f1f5f9; padding: 10px 8px; text-align: center; }
@@ -74,13 +64,8 @@
     .gantt-track { position: relative; height: 24px; background: #f8fafc; border-radius: 6px; overflow: hidden; border: 1px solid #e2e8f0; }
     .bar-plan { position: absolute; top: 3px; height: 7px; background: #60a5fa; border-radius: 4px; }
     .bar-real { position: absolute; bottom: 3px; height: 7px; background: var(--success); border-radius: 4px; }
-    .today-line { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--danger); z-index: 3; }
-
-    /* Tabs */
     .tab-section { display: none; }
     .tab-section.active { display: block; }
-
-    /* Workshops & Sequences */
     .wk-card { margin-bottom: 16px; }
     .wk-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
     .wk-title-input { font-size: 1.02rem; font-weight: 700; border: 1px solid transparent; padding: 4px 8px; border-radius: 6px; width: 320px; max-width: 100%; }
@@ -89,24 +74,18 @@
     .badge-done { background: #dcfce7; color: #166534; }
     .badge-wip { background: #dbeafe; color: #1e40af; }
     .badge-todo { background: #f1f5f9; color: #475569; }
-
     .se-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
     .se-table th { text-align: left; padding: 8px; border-bottom: 1px solid var(--border); color: var(--muted); font-size: 0.76rem; text-transform: uppercase; }
     .se-table td { padding: 8px; border-bottom: 1px solid #f1f5f9; }
     .se-input { border: 1px solid var(--border); border-radius: 6px; padding: 5px 8px; font-size: 0.88rem; }
     .se-pct { width: 68px; text-align: right; font-weight: 600; }
-
-    /* Modal */
     .modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.5); justify-content: center; align-items: center; z-index: 50; padding: 16px; }
     .modal-backdrop.open { display: flex; }
     .modal { background: #fff; border-radius: 12px; width: 100%; max-width: 480px; padding: 24px; display: flex; flex-direction: column; gap: 14px; }
     .form-group { display: flex; flex-direction: column; gap: 5px; }
     .form-group label { font-size: 0.85rem; font-weight: 600; }
     .form-group input, .form-group select, .form-group textarea { padding: 9px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.9rem; }
-
-    /* Journal */
     .log-item { border-left: 3px solid var(--primary); padding: 10px 14px; background: #f8fafc; border-radius: 0 8px 8px 0; margin-bottom: 10px; }
-
     @media (max-width: 768px) {
       body { flex-direction: column; }
       aside { width: 100%; flex-direction: row; overflow-x: auto; padding: 10px; align-items: center; }
@@ -116,7 +95,6 @@
   </style>
 </head>
 <body>
-
   <aside>
     <div class="brand"><span class="brand-badge">IA</span> SuiviFormation</div>
     <nav>
@@ -137,7 +115,6 @@
     </header>
 
     <div class="content">
-      <!-- KPIs -->
       <div class="kpi-grid">
         <div class="card">
           <div class="kpi-label">Heures réalisées</div>
@@ -158,3 +135,12 @@
         </div>
         <div class="card">
           <div class="kpi-label">Statut Planning</div>
+          <div class="kpi-value" id="kpi-status">Dans les temps</div>
+          <div class="kpi-sub" id="kpi-status-sub">WK1 & WK2 terminés • WK3 en cours</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="gantt-header">
+          <div>
+            <strong>📅 Frise Chronologique Gantt (Vue mensuelle sur 6 mois)</strong>
