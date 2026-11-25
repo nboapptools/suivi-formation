@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mon suivi de formation</title>
+<style>
+:root{--bg:#f4f6fb;--card:#fff;--ink:#182238;--muted:#667085;--line:#e5e9f2;--blue:#315efb;--green:#16845b;--amber:#b86b00}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{background:#17243b;color:white;padding:24px max(20px,calc((100% - 1100px)/2))}header h1{margin:0 0 6px;font-size:26px}header p{margin:0;color:#cbd5e1}
+main{max-width:1100px;margin:22px auto;padding:0 16px 40px}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px;box-shadow:0 2px 8px #17243b08}.metric{font-size:27px;font-weight:750;margin:5px 0}.muted{color:var(--muted);font-size:13px}.bar{height:9px;background:#e9edf5;border-radius:20px;overflow:hidden;margin:10px 0}.bar span{display:block;height:100%;background:var(--blue);border-radius:20px}.section-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}.section-head h2{margin:0;font-size:19px}button,select,input,textarea{font:inherit}button{border:0;border-radius:9px;background:var(--blue);color:#fff;padding:9px 13px;cursor:pointer;font-weight:600}button.secondary{background:#eef2ff;color:#2449cf}button.ghost{background:#f1f3f8;color:#344054}button.danger{background:#fff0f0;color:#b42318}input,select,textarea{border:1px solid #d7ddea;border-radius:8px;padding:9px;background:white;color:var(--ink);width:100%}label{display:block;font-size:13px;color:var(--muted);margin:8px 0 4px}.formrow{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.chapter{border:1px solid var(--line);border-radius:12px;margin:10px 0;background:#fff;overflow:hidden}.chapter summary{cursor:pointer;padding:13px 15px;font-weight:700;display:flex;justify-content:space-between;gap:12px}.seq{padding:12px 15px;border-top:1px solid var(--line);display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center}.seqtitle{font-weight:600}.status{font-size:12px;padding:4px 8px;border-radius:20px;background:#f0f2f6;color:#475467;white-space:nowrap}.status.done{background:#e7f7ef;color:#087443}.status.progress{background:#fff4db;color:#925800}.seqactions{display:flex;gap:6px;align-items:center}.small{font-size:12px}.workshoprow{display:grid;grid-template-columns:1fr 150px;gap:12px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}.workshoprow:last-child{border:0}.log{display:grid;grid-template-columns:100px 80px 1fr auto;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}.note{background:#f8faff;border:1px solid #dce6ff;padding:12px;border-radius:10px;color:#344054}.footer{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.empty{color:var(--muted);padding:12px 0}@media(max-width:760px){.grid{grid-template-columns:repeat(2,1fr)}.formrow{grid-template-columns:1fr}.log{grid-template-columns:1fr 70px}.log .lognote{grid-column:1/-1}.seq{grid-template-columns:1fr}.seqactions{flex-wrap:wrap}.workshoprow{grid-template-columns:1fr 125px}header h1{font-size:22px}}
+</style>
+</head>
+<body>
+<header><h1>Mon suivi de formation</h1><p>460 heures · 6 mois · 14 chapitres</p></header>
+<main>
+<div class="grid">
+ <div class="card"><div class="muted">Heures réalisées</div><div class="metric" id="hoursDone">0 h</div><div class="muted" id="hoursRemain">460 h restantes</div></div>
+ <div class="card"><div class="muted">Avancement horaire</div><div class="metric" id="percent">0 %</div><div class="bar"><span id="overallBar" style="width:0%"></span></div></div>
+ <div class="card"><div class="muted">Séquences terminées</div><div class="metric" id="seqDone">0 / 98</div><div class="muted">Sur les séquences créées</div></div>
+ <div class="card"><div class="muted">Rythme moyen visé</div><div class="metric">17,7 h/sem.</div><div class="muted">Environ 76,7 h/mois</div></div>
+</div>
+<div class="card">
+ <div class="section-head"><h2>Workshops</h2><span class="muted">État initial : 1 et 2 terminés, 3 commencé</span></div>
+ <div id="workshops"></div>
+ <div class="footer"><button class="secondary" id="addWorkshop">+ Ajouter un workshop</button></div>
+</div>
+<div class="card">
+ <div class="section-head"><h2>Ajouter une séance de travail</h2><span class="muted">Les heures alimentent le compteur global</span></div>
+ <div class="formrow">
+  <div><label>Date</label><input type="date" id="logDate"></div>
+  <div><label>Durée (heures)</label><input type="number" min="0.25" step="0.25" id="logHours" placeholder="Ex. 3,5"></div>
+  <div><label>Chapitre concerné</label><select id="logChapter"></select></div>
+ </div>
+ <label>Ce que j'ai fait / prochaine action</label><input id="logNote" placeholder="Ex. séquence 2 : exercices terminés, revoir la partie X">
+ <div class="footer"><button id="addLog">Enregistrer la séance</button></div>
+</div>
+<div class="card">
+ <div class="section-head"><h2>Journal des séances</h2><button class="ghost" id="clearLogs">Effacer le journal</button></div>
+ <div id="logs"></div>
+</div>
+<div class="card">
+ <div class="section-head"><h2>Mes 14 chapitres et séquences</h2><button id="addChapter" class="secondary">+ Ajouter un chapitre</button></div>
+ <p class="muted">Chaque chapitre commence avec 7 séquences modifiables. Tu peux en ajouter ou en supprimer pour rester entre 5 et 10 séquences par chapitre.</p>
+ <div id="chapters"></div>
+</div>
+<div class="card">
+ <div class="section-head"><h2>Mes données</h2></div>
+ <div class="note">Cette première version enregistre les données dans le navigateur de cet appareil. Pense à exporter une sauvegarde régulièrement. Pour synchroniser plusieurs appareils, il faudra ajouter une base de données ou un compte utilisateur.</div>
+ <div class="footer"><button id="export">Exporter ma sauvegarde</button><button class="ghost" id="importBtn">Importer une sauvegarde</button><input type="file" id="importFile" accept="application/json" hidden><button class="danger" id="reset">Réinitialiser l'application</button></div>
+</div>
+</main>
+<script>
+const TARGET=460;
+const initial=()=>({chapters:Array.from({length:14},(_,i)=>({id:crypto.randomUUID(),name:`Chapitre ${i+1}`,sequences:Array.from({length:7},(_,j)=>({id:crypto.randomUUID(),name:`Séquence ${j+1}`,hours:TARGET/98,status:"todo",notes:""}))})),workshops:[{name:"Workshop 1",status:"done"},{name:"Workshop 2",status:"done"},{name:"Workshop 3",status:"progress"}],logs:[]});
+let data;try{data=JSON.parse(localStorage.getItem("formation460"))||initial()}catch{data=initial()}
+const $=id=>document.getElementById(id);
+const save=()=>{localStorage.setItem("formation460",JSON.stringify(data));render()};
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const allSeq=()=>data.chapters.flatMap(c=>c.sequences);
+function render(){
+ const done=data.logs.reduce((a,l)=>a+Number(l.hours||0),0), seq=allSeq(), sd=seq.filter(s=>s.status==="done").length, pct=Math.min(100,done/TARGET*100);
+ $("hoursDone").textContent=done.toFixed(1).replace(".",",")+" h";$("hoursRemain").textContent=Math.max(0,TARGET-done).toFixed(1).replace(".",",")+" h restantes";
+ $("percent").textContent=pct.toFixed(0)+" %";$("overallBar").style.width=pct+"%";$("seqDone").textContent=sd+" / "+seq.length;
+ $("workshops").innerHTML=data.workshops.map((w,i)=>`<div class="workshoprow"><div><b>${esc(w.name)}</b><div class="muted">${w.status==="done"?"Terminé":w.status==="progress"?"En cours":"À faire"}</div></div><select onchange="setWorkshop(${i},this.value)"><option value="todo" ${w.status==="todo"?"selected":""}>À faire</option><option value="progress" ${w.status==="progress"?"selected":""}>En cours</option><option value="done" ${w.status==="done"?"selected":""}>Terminé</option></select></div>`).join("");
+ $("logChapter").innerHTML='<option value="">Séance générale / non liée</option>'+data.chapters.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join("");
+ $("logs").innerHTML=data.logs.length?data.logs.slice().reverse().map((l,ri)=>{let i=data.logs.length-1-ri;let ch=data.chapters.find(c=>c.id===l.chapter);return `<div class="log"><div>${esc(l.date)}</div><b>${Number(l.hours).toLocaleString("fr-FR")} h</b><div class="lognote">${esc(ch?.name||"Formation")} — ${esc(l.note||"Séance de travail")}</div><button class="danger small" onclick="deleteLog(${i})">Supprimer</button></div>`}).join(""):'<div class="empty">Aucune séance enregistrée pour le moment.</div>';
+ $("chapters").innerHTML=data.chapters.map((c,ci)=>{let n=c.sequences.length,sd=c.sequences.filter(s=>s.status==="done").length;return `<details class="chapter"><summary><span>${esc(c.name)} <span class="muted">(${sd}/${n})</span></span><span class="muted">${c.sequences.reduce((a,s)=>a+Number(s.hours||0),0).toFixed(1)} h prévues</span></summary><div style="padding:10px 15px"><label>Nom du chapitre</label><input value="${esc(c.name)}" onchange="renameChapter(${ci},this.value)"><div class="footer"><button class="secondary small" onclick="addSeq(${ci})" ${n>=10?"disabled":""}>+ Séquence</button><button class="danger small" onclick="deleteChapter(${ci})">Supprimer chapitre</button></div></div>${c.sequences.map((s,si)=>`<div class="seq"><div><div class="seqtitle">${esc(s.name)}</div><div class="muted">${Number(s.hours).toLocaleString("fr-FR")} h prévues ${s.notes? "· "+esc(s.notes):""}</div></div><div class="seqactions"><span class="status ${s.status}">${s.status==="done"?"Terminé":s.status==="progress"?"En cours":"À faire"}</span><button class="ghost small" onclick="editSeq(${ci},${si})">Modifier</button><select aria-label="Statut" onchange="setSeq(${ci},${si},this.value)" style="width:125px"><option value="todo" ${s.status==="todo"?"selected":""}>À faire</option><option value="progress" ${s.status==="progress"?"selected":""}>En cours</option><option value="done" ${s.status==="done"?"selected":""}>Terminé</option></select><button class="danger small" onclick="deleteSeq(${ci},${si})" ${n<=5?"disabled":""}>×</button></div></div>`).join("")}</details>`}).join("");
+}
+window.setWorkshop=(i,v)=>{data.workshops[i].status=v;save()};
+window.renameChapter=(i,v)=>{data.chapters[i].name=v.trim()||`Chapitre ${i+1}`;save()};
+window.setSeq=(ci,si,v)=>{data.chapters[ci].sequences[si].status=v;save()};
+window.editSeq=(ci,si)=>{let s=data.chapters[ci].sequences[si];let name=prompt("Nom de la séquence :",s.name);if(name===null)return;let h=prompt("Durée prévue en heures :",s.hours);if(h===null)return;let notes=prompt("Notes / objectif (facultatif) :",s.notes||"");if(notes===null)return;s.name=name.trim()||s.name;s.hours=Math.max(0,Number(h)||0);s.notes=notes;save()};
+window.addSeq=ci=>{let c=data.chapters[ci];if(c.sequences.length>=10)return;c.sequences.push({id:crypto.randomUUID(),name:`Séquence ${c.sequences.length+1}`,hours:0,status:"todo",notes:""});save()};
+window.deleteSeq=(ci,si)=>{let c=data.chapters[ci];if(c.sequences.length<=5)return;if(confirm("Supprimer cette séquence ?")){c.sequences.splice(si,1);save()}};
+window.deleteChapter=ci=>{if(confirm("Supprimer ce chapitre et ses séquences ?")){data.chapters.splice(ci,1);save()}};
+window.deleteLog=i=>{data.logs.splice(i,1);save()};
+$("addChapter").onclick=()=>{if(data.chapters.length>=14){alert("Les 14 chapitres sont déjà créés. Tu peux renommer les chapitres existants.");return}let n=data.chapters.length+1;data.chapters.push({id:crypto.randomUUID(),name:`Chapitre ${n}`,sequences:Array.from({length:7},(_,j)=>({id:crypto.randomUUID(),name:`Séquence ${j+1}`,hours:0,status:"todo",notes:""}))});save()};
+$("addWorkshop").onclick=()=>{let n=data.workshops.length+1;data.workshops.push({name:`Workshop ${n}`,status:"todo"});save()};
+$("logDate").value=new Date().toISOString().slice(0,10);
+$("addLog").onclick=()=>{let hours=Number($("logHours").value);if(!hours||hours<=0){alert("Indique une durée supérieure à zéro.");return}data.logs.push({date:$("logDate").value||new Date().toISOString().slice(0,10),hours,chapter:$("logChapter").value,note:$("logNote").value.trim()});$("logHours").value="";$("logNote").value="";save()};
+$("clearLogs").onclick=()=>{if(confirm("Effacer toutes les séances enregistrées ?")){data.logs=[];save()}};
+$("export").onclick=()=>{let blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="sauvegarde-formation.json";a.click();URL.revokeObjectURL(a.href)};
+$("importBtn").onclick=()=>$("importFile").click();
+$("importFile").onchange=async e=>{let f=e.target.files[0];if(!f)return;try{let d=JSON.parse(await f.text());if(!d.chapters||!d.logs)throw Error();data=d;save();alert("Sauvegarde importée.")}catch{alert("Fichier de sauvegarde invalide.")}};
+$("reset").onclick=()=>{if(confirm("Tout remettre à zéro ? Cette action efface les données locales.")){data=initial();save()}};
+render();
+</script>
+</body></html>
