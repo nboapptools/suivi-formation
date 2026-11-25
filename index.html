@@ -1,146 +1,143 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SuiviFormation — Pilotage IA (460h)</title>
-  <style>
-    :root {
-      --sidebar-bg: #0f172a;
-      --sidebar-hover: #1e293b;
-      --primary: #2563eb;
-      --primary-hover: #1d4ed8;
-      --bg: #f1f5f9;
-      --card: #ffffff;
-      --text: #0f172a;
-      --muted: #64748b;
-      --border: #e2e8f0;
-      --success: #10b981;
-      --warning: #f59e0b;
-      --danger: #ef4444;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
-    body { display: flex; min-height: 100vh; background: var(--bg); color: var(--text); }
-    aside { width: 250px; background: var(--sidebar-bg); color: #fff; display: flex; flex-direction: column; padding: 20px 14px; flex-shrink: 0; }
-    .brand { display: flex; align-items: center; gap: 10px; font-size: 1.2rem; font-weight: 700; margin-bottom: 28px; padding: 0 8px; }
-    .brand-badge { background: var(--primary); padding: 4px 8px; border-radius: 6px; font-size: 0.85rem; }
-    nav { display: flex; flex-direction: column; gap: 6px; }
-    .nav-btn { background: transparent; border: none; color: #cbd5e1; text-align: left; padding: 12px 14px; border-radius: 8px; cursor: pointer; font-size: 0.95rem; display: flex; align-items: center; gap: 10px; transition: 0.15s; }
-    .nav-btn:hover { background: var(--sidebar-hover); color: #fff; }
-    .nav-btn.active { background: var(--primary); color: #fff; font-weight: 600; }
-    main { flex: 1; display: flex; flex-direction: column; overflow-x: hidden; }
-    header { background: var(--card); padding: 18px 28px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
-    header h1 { font-size: 1.35rem; font-weight: 700; }
-    header p { font-size: 0.85rem; color: var(--muted); margin-top: 2px; }
-    .btn { background: var(--primary); color: #fff; border: none; padding: 10px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.9rem; transition: 0.15s; }
-    .btn:hover:not(:disabled) { background: var(--primary-hover); }
-    .btn:disabled { opacity: 0.45; cursor: not-allowed; }
-    .btn-sm { padding: 6px 12px; font-size: 0.82rem; border-radius: 6px; }
-    .btn-outline { background: #fff; color: var(--text); border: 1px solid var(--border); }
-    .btn-outline:hover:not(:disabled) { background: #f8fafc; border-color: #cbd5e1; }
-    .btn-outline.active-month { background: #eff6ff; border-color: var(--primary); color: var(--primary); font-weight: 700; }
-    .btn-danger { background: var(--danger); color: #fff; }
-    .content { padding: 24px 28px; display: flex; flex-direction: column; gap: 24px; }
-    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; }
-    .card { background: var(--card); border-radius: 12px; padding: 18px 20px; border: 1px solid var(--border); box-shadow: 0 1px 2px rgba(0,0,0,0.03); }
-    .kpi-label { font-size: 0.75rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
-    .kpi-value { font-size: 1.75rem; font-weight: 700; margin: 6px 0 4px; }
-    .kpi-sub { font-size: 0.82rem; color: var(--muted); }
-    .progress-bar { width: 100%; height: 8px; background: #e2e8f0; border-radius: 99px; overflow: hidden; margin-top: 10px; }
-    .progress-fill { height: 100%; background: var(--primary); transition: width 0.3s; }
-    .gantt-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 12px; }
-    .gantt-controls { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-    .month-badge { font-size: 1rem; font-weight: 700; min-width: 155px; text-align: center; text-transform: capitalize; color: var(--primary); background: #eff6ff; padding: 6px 12px; border-radius: 8px; border: 1px solid #bfdbfe; }
-    .month-pills { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 12px; }
-    .legend { display: flex; gap: 16px; font-size: 0.82rem; color: var(--muted); }
-    .legend span { display: flex; align-items: center; gap: 6px; }
-    .dot { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
-    .gantt-wrapper { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; }
-    table.gantt { width: 100%; border-collapse: collapse; min-width: 720px; font-size: 0.84rem; }
-    table.gantt th, table.gantt td { border-bottom: 1px solid var(--border); border-right: 1px solid #f1f5f9; padding: 10px 8px; text-align: center; }
-    table.gantt th { background: #f8fafc; font-weight: 600; color: var(--text); }
-    table.gantt th small { display: block; font-weight: 400; color: var(--muted); font-size: 0.74rem; margin-top: 2px; }
-    table.gantt td.wk-col { text-align: left; padding-left: 14px; font-weight: 600; width: 280px; min-width: 240px; background: #fff; }
-    .gantt-track { position: relative; height: 24px; background: #f8fafc; border-radius: 6px; overflow: hidden; border: 1px solid #e2e8f0; }
-    .bar-plan { position: absolute; top: 3px; height: 7px; background: #60a5fa; border-radius: 4px; }
-    .bar-real { position: absolute; bottom: 3px; height: 7px; background: var(--success); border-radius: 4px; }
-    .tab-section { display: none; }
-    .tab-section.active { display: block; }
-    .wk-card { margin-bottom: 16px; }
-    .wk-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
-    .wk-title-input { font-size: 1.02rem; font-weight: 700; border: 1px solid transparent; padding: 4px 8px; border-radius: 6px; width: 320px; max-width: 100%; }
-    .wk-title-input:hover, .wk-title-input:focus { border-color: var(--border); background: #f8fafc; outline: none; }
-    .badge { padding: 4px 10px; border-radius: 99px; font-size: 0.78rem; font-weight: 600; }
-    .badge-done { background: #dcfce7; color: #166534; }
-    .badge-wip { background: #dbeafe; color: #1e40af; }
-    .badge-todo { background: #f1f5f9; color: #475569; }
-    .se-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
-    .se-table th { text-align: left; padding: 8px; border-bottom: 1px solid var(--border); color: var(--muted); font-size: 0.76rem; text-transform: uppercase; }
-    .se-table td { padding: 8px; border-bottom: 1px solid #f1f5f9; }
-    .se-input { border: 1px solid var(--border); border-radius: 6px; padding: 5px 8px; font-size: 0.88rem; }
-    .se-pct { width: 68px; text-align: right; font-weight: 600; }
-    .modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.5); justify-content: center; align-items: center; z-index: 50; padding: 16px; }
-    .modal-backdrop.open { display: flex; }
-    .modal { background: #fff; border-radius: 12px; width: 100%; max-width: 480px; padding: 24px; display: flex; flex-direction: column; gap: 14px; }
-    .form-group { display: flex; flex-direction: column; gap: 5px; }
-    .form-group label { font-size: 0.85rem; font-weight: 600; }
-    .form-group input, .form-group select, .form-group textarea { padding: 9px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.9rem; }
-    .log-item { border-left: 3px solid var(--primary); padding: 10px 14px; background: #f8fafc; border-radius: 0 8px 8px 0; margin-bottom: 10px; }
-    @media (max-width: 768px) {
-      body { flex-direction: column; }
-      aside { width: 100%; flex-direction: row; overflow-x: auto; padding: 10px; align-items: center; }
-      .brand { margin-bottom: 0; margin-right: 12px; }
-      nav { flex-direction: row; }
-    }
-  </style>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>SuiviFormation — Pilotage IA (460h)</title>
+<style>
+:root{--sb:#0f172a;--sbh:#1e293b;--p:#2563eb;--ph:#1d4ed8;--bg:#f1f5f9;--c:#fff;--t:#0f172a;--m:#64748b;--b:#e2e8f0;--ok:#10b981;--w:#f59e0b;--d:#ef4444}
+*{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,-apple-system,sans-serif}
+body{display:flex;min-height:100vh;background:var(--bg);color:var(--t)}
+aside{width:240px;background:var(--sb);color:#fff;display:flex;flex-direction:column;padding:18px 12px;flex-shrink:0}
+.brand{display:flex;align-items:center;gap:8px;font-size:1.15rem;font-weight:700;margin-bottom:24px;padding:0 8px}
+.badge-ia{background:var(--p);padding:3px 7px;border-radius:6px;font-size:.8rem}
+nav{display:flex;flex-direction:column;gap:5px}
+.nav-btn{background:transparent;border:none;color:#cbd5e1;text-align:left;padding:11px 12px;border-radius:8px;cursor:pointer;font-size:.92rem;display:flex;align-items:center;gap:8px}
+.nav-btn:hover{background:var(--sbh);color:#fff}
+.nav-btn.active{background:var(--p);color:#fff;font-weight:600}
+main{flex:1;display:flex;flex-direction:column;overflow-x:hidden}
+header{background:var(--c);padding:16px 24px;border-bottom:1px solid var(--b);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+header h1{font-size:1.3rem}header p{font-size:.82rem;color:var(--m)}
+.btn{background:var(--p);color:#fff;border:none;padding:9px 14px;border-radius:8px;font-weight:600;cursor:pointer;font-size:.88rem}
+.btn:hover:not(:disabled){background:var(--ph)}.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn-sm{padding:5px 10px;font-size:.8rem;border-radius:6px}
+.btn-out{background:#fff;color:var(--t);border:1px solid var(--b)}.btn-out:hover:not(:disabled){background:#f8fafc}
+.btn-out.act-m{background:#eff6ff;border-color:var(--p);color:var(--p);font-weight:700}
+.btn-del{background:var(--d);color:#fff}
+.content{padding:20px 24px;display:flex;flex-direction:column;gap:20px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+.card{background:var(--c);border-radius:12px;padding:16px 18px;border:1px solid var(--b)}
+.kl{font-size:.72rem;font-weight:700;color:var(--m);text-transform:uppercase}.kv{font-size:1.6rem;font-weight:700;margin:4px 0}.ks{font-size:.8rem;color:var(--m)}
+.pbar{width:100%;height:7px;background:#e2e8f0;border-radius:99px;overflow:hidden;margin-top:8px}.pfill{height:100%;background:var(--p);transition:width .3s}
+.gh{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:10px}
+.gc{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.mbadge{font-size:.95rem;font-weight:700;min-width:145px;text-align:center;color:var(--p);background:#eff6ff;padding:5px 10px;border-radius:8px;border:1px solid #bfdbfe}
+.mpills{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px}
+.leg{display:flex;gap:14px;font-size:.8rem;color:var(--m)}.dot{width:10px;height:10px;border-radius:3px;display:inline-block;margin-right:4px}
+.gw{overflow-x:auto;border:1px solid var(--b);border-radius:8px}
+table.gantt{width:100%;border-collapse:collapse;min-width:680px;font-size:.82rem}
+table.gantt th,table.gantt td{border-bottom:1px solid var(--b);border-right:1px solid #f1f5f9;padding:8px 6px;text-align:center}
+table.gantt th{background:#f8fafc}table.gantt th small{display:block;font-weight:400;color:var(--m);font-size:.72rem}
+table.gantt td.wkc{text-align:left;padding-left:12px;font-weight:600;width:240px;background:#fff}
+.gtrack{position:relative;height:22px;background:#f8fafc;border-radius:5px;overflow:hidden;border:1px solid #e2e8f0}
+.bplan{position:absolute;top:2px;height:6px;background:#60a5fa;border-radius:3px}
+.breal{position:absolute;bottom:2px;height:6px;background:var(--ok);border-radius:3px}
+.tab{display:none}.tab.active{display:block}
+.wk-card{margin-bottom:14px}.wk-top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.wk-in{font-size:1rem;font-weight:700;border:1px solid transparent;padding:4px 6px;border-radius:6px;width:290px;max-width:100%}.wk-in:focus,.wk-in:hover{border-color:var(--b);background:#f8fafc}
+.bg{padding:3px 9px;border-radius:99px;font-size:.76rem;font-weight:600}.bg-ok{background:#dcfce7;color:#166534}.bg-wip{background:#dbeafe;color:#1e40af}.bg-td{background:#f1f5f9;color:#475569}
+.set{width:100%;border-collapse:collapse;font-size:.85rem}.set th{text-align:left;padding:6px;border-bottom:1px solid var(--b);color:var(--m);font-size:.74rem}.set td{padding:6px;border-bottom:1px solid #f1f5f9}
+.sein{border:1px solid var(--b);border-radius:5px;padding:4px 6px;font-size:.85rem}.sepct{width:60px;text-align:right;font-weight:600}
+.mb{display:none;position:fixed;inset:0;background:rgba(15,23,42,.5);justify-content:center;align-items:center;z-index:50;padding:16px}.mb.open{display:flex}
+.modal{background:#fff;border-radius:12px;width:100%;max-width:440px;padding:20px;display:flex;flex-direction:column;gap:12px}
+.fg{display:flex;flex-direction:column;gap:4px}.fg label{font-size:.82rem;font-weight:600}.fg input,.fg select,.fg textarea{padding:8px;border:1px solid var(--b);border-radius:7px}
+.log{border-left:3px solid var(--p);padding:8px 12px;background:#f8fafc;border-radius:0 6px 6px 0;margin-bottom:8px}
+@media(max-width:768px){body{flex-direction:column}aside{width:100%;flex-direction:row;overflow-x:auto}nav{flex-direction:row}.brand{margin:0 10px 0 0}}
+</style>
 </head>
 <body>
-  <aside>
-    <div class="brand"><span class="brand-badge">IA</span> SuiviFormation</div>
-    <nav>
-      <button class="nav-btn active" onclick="switchTab('dashboard', this)">🏠 Tableau de bord</button>
-      <button class="nav-btn" onclick="switchTab('workshops', this)">📚 14 Workshops (WK)</button>
-      <button class="nav-btn" onclick="switchTab('journal', this)">📝 Journal & Séances</button>
-      <button class="nav-btn" onclick="switchTab('backup', this)">💾 Sauvegarde JSON</button>
-    </nav>
-  </aside>
+<aside>
+  <div class="brand"><span class="badge-ia">IA</span> SuiviFormation</div>
+  <nav>
+    <button class="nav-btn active" onclick="st('dash',this)">🏠 Tableau de bord</button>
+    <button class="nav-btn" onclick="st('wks',this)">📚 14 Workshops (WK)</button>
+    <button class="nav-btn" onclick="st('log',this)">📝 Journal & Séances</button>
+    <button class="nav-btn" onclick="st('bak',this)">💾 Sauvegarde JSON</button>
+  </nav>
+</aside>
+<main>
+  <header>
+    <div><h1>Pilotage de ma formation IA</h1><p>09/11/2026 au 09/05/2027 • 14 Workshops (WK) • Objectif 18 h/sem</p></div>
+    <button class="btn" onclick="om()">+ Saisir une séance</button>
+  </header>
+  <div class="content">
+    <div class="kpis">
+      <div class="card"><div class="kl">Heures réalisées</div><div class="kv" id="kh">0 h</div><div class="ks" id="khs">460 h restantes</div><div class="pbar"><div class="pfill" id="khb" style="width:0%"></div></div></div>
+      <div class="card"><div class="kl">Avancement global</div><div class="kv" id="kp">0 %</div><div class="ks" id="kss">0 / 84 séquences</div><div class="pbar"><div class="pfill" id="kpb" style="width:0%"></div></div></div>
+      <div class="card"><div class="kl">Rythme cible</div><div class="kv">18,0 h/sem</div><div class="ks">Soirs & week-ends + congés</div></div>
+      <div class="card"><div class="kl">Statut Planning</div><div class="kv">Dans les temps</div><div class="ks">WK1-2 terminés • WK3 en cours</div></div>
+    </div>
 
-  <main>
-    <header>
-      <div>
-        <h1>Pilotage de ma formation IA</h1>
-        <p>Du 09/11/2026 au 09/05/2027 • 14 Workshops (WK) • Objectif 18 h/semaine (soirs & week-ends)</p>
-      </div>
-      <button class="btn" onclick="openModal()">+ Saisir une séance</button>
-    </header>
-
-    <div class="content">
-      <div class="kpi-grid">
-        <div class="card">
-          <div class="kpi-label">Heures réalisées</div>
-          <div class="kpi-value" id="kpi-hours">0 h</div>
-          <div class="kpi-sub" id="kpi-hours-sub">460 h restantes sur 460 h</div>
-          <div class="progress-bar"><div class="progress-fill" id="kpi-hours-bar" style="width:0%"></div></div>
-        </div>
-        <div class="card">
-          <div class="kpi-label">Avancement global</div>
-          <div class="kpi-value" id="kpi-pct">0 %</div>
-          <div class="kpi-sub" id="kpi-seq-sub">0 / 84 séquences terminées</div>
-          <div class="progress-bar"><div class="progress-fill" id="kpi-pct-bar" style="width:0%"></div></div>
-        </div>
-        <div class="card">
-          <div class="kpi-label">Rythme cible</div>
-          <div class="kpi-value">18,0 h/sem</div>
-          <div class="kpi-sub">Base hebdo (congés 09-15/11 inclus)</div>
-        </div>
-        <div class="card">
-          <div class="kpi-label">Statut Planning</div>
-          <div class="kpi-value" id="kpi-status">Dans les temps</div>
-          <div class="kpi-sub" id="kpi-status-sub">WK1 & WK2 terminés • WK3 en cours</div>
+    <div class="card">
+      <div class="gh">
+        <div><strong>📅 Frise Chronologique Gantt (6 mois)</strong><div style="font-size:.78rem;color:var(--m)">SE1-2 Cours (30%) • SE3-4 Projet (40%) • SE5-6 Finalisation (20%) • Livrable (10% ≈ 1,5j)</div></div>
+        <div class="gc">
+          <button class="btn btn-out btn-sm" id="bp" onclick="cm(-1)">◀ Mois préc.</button>
+          <span class="mbadge" id="ml">Novembre 2026</span>
+          <button class="btn btn-out btn-sm" id="bn" onclick="cm(1)">Mois suiv. ▶</button>
         </div>
       </div>
+      <div class="mpills" id="mp"></div>
+      <div class="leg" style="margin-bottom:8px"><span><i class="dot" style="background:#60a5fa"></i>Prévu (18h/sem)</span><span><i class="dot" style="background:var(--ok)"></i>Réalisé (%)</span></div>
+      <div class="gw" id="gc"></div>
+    </div>
 
-      <div class="card">
-        <div class="gantt-header">
-          <div>
-            <strong>📅 Frise Chronologique Gantt (Vue mensuelle sur 6 mois)</strong>
+    <section id="tab-dash" class="tab active"><div class="card"><h3 style="margin-bottom:12px">🎯 Workshop en cours (Focus actuel)</h3><div id="df"></div></div></section>
+    <section id="tab-wks" class="tab"><div class="card" style="margin-bottom:12px"><h3>📚 Gestion des 14 Workshops (WK) et Séquences (SE)</h3><p style="font-size:.84rem;color:var(--m)">Modifie les titres, les heures, les % ou ajoute/supprime des SE.</p></div><div id="wl"></div></section>
+    <section id="tab-log" class="tab"><div class="card"><h3 style="margin-bottom:12px">📝 Journal des séances</h3><div id="jl"></div></div></section>
+    <section id="tab-bak" class="tab"><div class="card"><h3>💾 Sauvegarde JSON</h3><p style="font-size:.85rem;color:var(--m);margin:8px 0 14px">Exporte régulièrement tes données pour sécuriser ton suivi.</p><div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn" onclick="exp()">⬇️ Exporter (.json)</button><label class="btn btn-out" style="cursor:pointer">⬆️ Importer (.json)<input type="file" accept=".json" style="display:none" onchange="imp(event)"></label><button class="btn btn-del" onclick="rst()">🔄 Réinitialiser</button></div></div></section>
+  </div>
+</main>
+
+<div class="mb" id="mod">
+  <div class="modal">
+    <h3>+ Enregistrer une séance</h3>
+    <div class="fg"><label>Date</label><input type="date" id="md"></div>
+    <div class="fg"><label>Workshop</label><select id="mw"></select></div>
+    <div class="fg"><label>Heures travaillées</label><input type="number" id="mh" value="3" step="0.5" min="0.5"></div>
+    <div class="fg"><label>Notes / Avancement</label><textarea id="mn" rows="2"></textarea></div>
+    <div class="fg"><label>Difficultés / Prochaine action</label><input type="text" id="mx"></div>
+    <div style="display:flex;justify-content:flex-end;gap:8px"><button class="btn btn-out" onclick="cmod()">Annuler</button><button class="btn" onclick="smod()">Enregistrer</button></div>
+  </div>
+</div>
+
+<script>
+const TH=460,WH=18,SD=new Date('2026-11-09T00:00:00');
+Utilisez le code avec précaution.
+const MS=[{y:2026,m:10,l:'Nov. 2026',f:'Novembre 2026'},{y:2026,m:11,l:'Déc. 2026',f:'Décembre 2026'},{y:2027,m:0,l:'Janv. 2027',f:'Janvier 2027'},{y:2027,m:1,l:'Févr. 2027',f:'Février 2027'},{y:2027,m:2,l:'Mars 2027',f:'Mars 2027'},{y:2027,m:3,l:'Avr. 2027',f:'Avril 2027'},{y:2027,m:4,l:'Mai 2027',f:'Mai 2027'}];
+let mi=0;
+function dseq(i,p){return[{id:'s'+i+'1',c:'SE1',t:'Cours & Concepts (1)',y:'Cours',w:15,p:p},{id:'s'+i+'2',c:'SE2',t:'Cours & Pratiques (2)',y:'Cours',w:15,p:p},{id:'s'+i+'3',c:'SE3',t:'Projet — Conception',y:'Projet',w:20,p:p},{id:'s'+i+'4',c:'SE4',t:'Projet — Développement',y:'Projet',w:20,p:p},{id:'s'+i+'5',c:'SE5',t:'Finalisation & Amélioration',y:'Finalisation',w:20,p:p},{id:'s'+i+'6',c:'SE6',t:'Livrable lourd (~1,5j)',y:'Livrable',w:10,p:p}]}
+function defData(){const wks=[];for(let i=1;i<=14;i++){let p=0,h=33;if(i===1||i===2){p=100;h=24}else if(i===3){p=50;h=34}else if(i===14)h=48;wks.push({id:i,c:'WK'+i,t:'Module '+i+' — Thème à personnaliser',h:h,seq:dseq(i,p)})}return{wks:wks,logs:[{d:'2026-11-15',w:'WK1 & WK2',h:48,n:'Workshops 1 et 2 terminés pendant la semaine de congés (09-15/11).',x:'Démarrer WK3'},{d:'2026-11-22',w:'WK3',h:18,n:'SE1-SE2 terminées, projet SE3 en cours.',x:'Finir WK3 avant le 29/11'}]}}
+let stt=JSON.parse(localStorage.getItem('sia_v5'))||defData();
+function save(){localStorage.setItem('sia_v5',JSON.stringify(stt));all()}
+function st(id,b){document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));document.querySelectorAll('.nav-btn').forEach(e=>e.classList.remove('active'));document.getElementById('tab-'+id).classList.add('active');if(b)b.classList.add('active')}
+function cm(d){mi=Math.max(0,Math.min(MS.length-1,mi+d));rGantt()}
+function sm(i){mi=i;rGantt()}
+function wkp(w){if(!w.seq.length)return 0;const tw=w.seq.reduce((a,s)=>a+Number(s.w||1),0),ws=w.seq.reduce((a,s)=>a+(Number(s.p||0)Number(s.w||1)),0);return Math.round(ws/tw)}
+function fd(d){return d.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'})}
+function rKpis(){let rh=0,ts=0,ds=0;stt.wks.forEach(w=>{rh+=(w.hwkp(w))/100;w.seq.forEach(s=>{ts++;if(Number(s.p)>=100)ds++})});rh=Math.round(rh*10)/10;const rem=Math.max(0,Math.round((TH-rh)10)/10),gp=Math.min(100,Math.round((rh/TH)100));document.getElementById('kh').textContent=rh+' h';document.getElementById('khs').textContent=rem+' h restantes sur '+TH+' h';document.getElementById('khb').style.width=gp+'%';document.getElementById('kp').textContent=gp+' %';document.getElementById('kss').textContent=ds+' / '+ts+' séquences terminées';document.getElementById('kpb').style.width=gp+'%'}
+function rGantt(){const m=MS[mi];document.getElementById('ml').textContent=m.f;document.getElementById('bp').disabled=mi===0;document.getElementById('bn').disabled=mi===MS.length-1;document.getElementById('mp').innerHTML=MS.map((x,i)=><button class="btn btn-out btn-sm ${i===mi?'act-m':''}" onclick="sm(${i})">${x.l}</button>).join('');const ms=new Date(m.y,m.m,1,0,0,0),me=new Date(m.y,m.m+1,0,23,59,59),md=me-ms,wks=[];let c=new Date(ms),wn=1;while(c<=me){const ws=new Date(c),we=new Date(c);we.setDate(we.getDate()+6);if(we>me)we.setTime(me.getTime());wks.push({l:'Sem.'+wn,r:fd(ws)+'-'+fd(we)});c.setDate(c.getDate()+7);wn++}let cms=SD.getTime(),mpw=7864e5;const sch=stt.wks.map(w=>{let dw=w.h/WH;if(w.id===1||w.id===2)dw=0.5;const s=cms,e=s+dwmpw;cms=e;return{w,s,e}});let h=<table class="gantt"><thead><tr><th style="text-align:left;padding-left:12px">Workshop</th><th>Dates prévues</th>${wks.map(x=>${x.l}${x.r}).join('')}</tr></thead><tbody>;sch.forEach(({w,s,e})=>{const p=wkp(w),vis=e>=ms&&s<=me;let bh='';if(vis){const vs=Math.max(s,ms),ve=Math.min(e,me),lp=((vs-ms)/md)*100,wp=Math.max(3,((ve-vs)/md)100),rp=(wpp)/100;bh=<div class="gtrack"><div class="bplan" style="left:${lp}%;width:${wp}%"></div><div class="breal" style="left:${lp}%;width:${rp}%"></div></div>}h+=<tr style="${vis?'':'opacity:.5;background:#fafafa'}"><td class="wkc">${w.c} (${w.h}h) <span style="float:right;color:var(--p)">${p}%</span></td><td style="font-size:.76rem;color:var(--m)">${fd(new Date(s))} → ${fd(new Date(e))}</td><td colspan="${wks.length}">${bh}</td></tr>});document.getElementById('gc').innerHTML=h+''}
+function rWks(){let h='',fh='';stt.wks.forEach((w,wi)=>{const p=wkp(w),bc=p===100?'bg-ok':(p>0?'bg-wip':'bg-td'),bt=p===100?'Terminé':(p>0?'En cours ('+p+'%)':'À faire');const rows=w.seq.map((s,si)=><tr><td><strong>${s.c}</strong></td><td><input class="sein" style="width:100%" value="${s.t}" onchange="us(${wi},${si},'t',this.value)"></td><td><span class="bg bg-td">${s.y}</span></td><td><input type="number" class="sein sepct" value="${s.w}" min="1" max="100" onchange="us(${wi},${si},'w',this.value)">%</td><td>${((w.h*s.w)/100).toFixed(1)}h</td><td><input type="number" class="sein sepct" value="${s.p}" min="0" max="100" onchange="us(${wi},${si},'p',this.value)">%</td><td><button class="btn btn-del btn-sm" onclick="ds(${wi},${si})">✕</button></td></tr>).join('');const card=<div class="card wk-card"><div class="wk-top"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><strong>${w.c}</strong><input class="wk-in" value="${w.t}" onchange="uw(${wi},'t',this.value)"><span class="bg ${bc}">${bt}</span></div><div style="display:flex;align-items:center;gap:6px"><label style="font-size:.8rem">Heures:</label><input type="number" class="sein" style="width:60px" value="${w.h}" min="1" onchange="uw(${wi},'h',this.value)"><button class="btn btn-out btn-sm" onclick="as(${wi})">+ SE</button></div></div><div style="overflow-x:auto"><table class="set"><thead><tr><th>Code</th><th>Séquence</th><th>Phase</th><th>Poids</th><th>Est.</th><th>Avancement</th><th></th></tr></thead><tbody>${rows}</tbody></table></div></div>;h+=card;if(p>0&&p<100)fh+=card});document.getElementById('wl').innerHTML=h;document.getElementById('df').innerHTML=fh||'Aucun workshop en cours.'}
+function rLog(){document.getElementById('jl').innerHTML=stt.logs.length?stt.logs.slice().reverse().map(l=><div class="log"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><strong>${l.d} — ${l.w}</strong><span class="bg bg-wip">+${l.h} h</span></div><p style="font-size:.88rem">${l.n}</p>${l.x?➡️ ${l.x}:''}</div>).join(''):'Aucune séance.'}
+function uw(i,f,v){stt.wks[i][f]=f==='h'?Number(v)||1:v;save()}
+function us(wi,si,f,v){stt.wks[wi].seq[si][f]=f==='t'?v:Number(v)||0;save()}
+function as(wi){const w=stt.wks[wi];w.seq.push({id:'s'+w.id+Date.now(),c:'SE'+(w.seq.length+1),t:'Nouvelle séquence',y:'Projet',w:10,p:0});save()}
+function ds(wi,si){if(stt.wks[wi].seq.length<=1)return alert('Minimum 1 SE');stt.wks[wi].seq.splice(si,1);stt.wks[wi].seq.forEach((s,i)=>s.c='SE'+(i+1));save()}
+function om(){document.getElementById('md').valueAsDate=new Date();document.getElementById('mw').innerHTML=stt.wks.map(w=><option value="${w.c}">${w.c} — ${w.t}</option>).join('');document.getElementById('mod').classList.add('open')}
+function cmod(){document.getElementById('mod').classList.remove('open')}
+function smod(){stt.logs.push({d:document.getElementById('md').value,w:document.getElementById('mw').value,h:Number(document.getElementById('mh').value)||1,n:document.getElementById('mn').value||'Séance',x:document.getElementById('mx').value});cmod();save()}
+function exp(){const b=new Blob([JSON.stringify(stt,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='suivi-ia.json';a.click()}
+function imp(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{try{stt=JSON.parse(ev.target.result);save();alert('Importé !')}catch{alert('Invalide')}};r.readAsText(f)}
+function rst(){if(confirm('Réinitialiser ?')){stt=defData();save()}}
+function all(){rKpis();rGantt();rWks();rLog()}
+all();
+              </html>
