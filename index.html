@@ -3,199 +3,158 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SuiviFormation IA - Pilotage & Gantt</title>
+  <title>SuiviFormation — Pilotage IA (460h)</title>
   <style>
     :root {
-      --sidebar-bg: #111827;
-      --sidebar-hover: #1f2937;
+      --sidebar-bg: #0f172a;
+      --sidebar-hover: #1e293b;
       --primary: #2563eb;
       --primary-hover: #1d4ed8;
-      --bg-main: #f3f4f6;
-      --card-bg: #ffffff;
-      --text-main: #111827;
-      --text-muted: #6b7280;
-      --border: #e5e7eb;
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #e2e8f0;
       --success: #10b981;
       --warning: #f59e0b;
       --danger: #ef4444;
     }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
-    body { display: flex; min-height: 100vh; background: var(--bg-main); color: var(--text-main); }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
+    body { display: flex; min-height: 100vh; background: var(--bg); color: var(--text); }
 
     /* Sidebar */
-    .sidebar {
-      width: 250px; background: var(--sidebar-bg); color: #fff;
-      display: flex; flex-direction: column; flex-shrink: 0;
-    }
-    .brand {
-      padding: 20px; display: flex; align-items: center; gap: 12px;
-      font-size: 1.2rem; font-weight: 700; border-bottom: 1px solid #1f2937;
-    }
-    .brand-badge {
-      background: var(--primary); color: #fff; padding: 4px 8px;
-      border-radius: 6px; font-size: 0.9rem;
-    }
-    .nav { padding: 15px 10px; display: flex; flex-direction: column; gap: 6px; }
-    .nav-btn {
-      background: transparent; border: none; color: #d1d5db;
-      padding: 12px 14px; text-align: left; border-radius: 8px;
-      cursor: pointer; font-size: 0.95rem; display: flex; align-items: center; gap: 10px;
-      transition: 0.2s;
-    }
+    aside { width: 250px; background: var(--sidebar-bg); color: #fff; display: flex; flex-direction: column; padding: 20px 14px; flex-shrink: 0; }
+    .brand { display: flex; align-items: center; gap: 10px; font-size: 1.2rem; font-weight: 700; margin-bottom: 28px; padding: 0 8px; }
+    .brand-badge { background: var(--primary); padding: 4px 8px; border-radius: 6px; font-size: 0.85rem; }
+    nav { display: flex; flex-direction: column; gap: 6px; }
+    .nav-btn { background: transparent; border: none; color: #cbd5e1; text-align: left; padding: 12px 14px; border-radius: 8px; cursor: pointer; font-size: 0.95rem; display: flex; align-items: center; gap: 10px; transition: 0.15s; }
     .nav-btn:hover { background: var(--sidebar-hover); color: #fff; }
     .nav-btn.active { background: var(--primary); color: #fff; font-weight: 600; }
 
-    /* Main Layout */
-    .main { flex: 1; display: flex; flex-direction: column; overflow-x: hidden; }
-    .topbar {
-      background: var(--card-bg); padding: 18px 28px; border-bottom: 1px solid var(--border);
-      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;
-    }
-    .topbar h1 { font-size: 1.35rem; font-weight: 700; }
-    .topbar p { font-size: 0.85rem; color: var(--text-muted); margin-top: 3px; }
-    .btn-primary {
-      background: var(--primary); color: #fff; border: none; padding: 10px 18px;
-      border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.9rem;
-      transition: 0.2s;
-    }
-    .btn-primary:hover { background: var(--primary-hover); }
-    .btn-sm { padding: 6px 10px; font-size: 0.8rem; border-radius: 6px; cursor: pointer; border: 1px solid var(--border); background: #fff; }
-    .btn-sm:hover { background: #f9fafb; }
-    .btn-danger { color: var(--danger); border-color: #fecaca; }
+    /* Main */
+    main { flex: 1; display: flex; flex-direction: column; overflow-x: hidden; }
+    header { background: var(--card); padding: 18px 28px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+    header h1 { font-size: 1.35rem; font-weight: 700; }
+    header p { font-size: 0.85rem; color: var(--muted); margin-top: 2px; }
+    .btn { background: var(--primary); color: #fff; border: none; padding: 10px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.9rem; transition: 0.15s; }
+    .btn:hover { background: var(--primary-hover); }
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+    .btn-sm { padding: 6px 12px; font-size: 0.82rem; border-radius: 6px; }
+    .btn-outline { background: #fff; color: var(--text); border: 1px solid var(--border); }
+    .btn-outline:hover:not(:disabled) { background: #f8fafc; border-color: #cbd5e1; }
+    .btn-outline.active-month { background: #eff6ff; border-color: var(--primary); color: var(--primary); font-weight: 700; }
+    .btn-danger { background: var(--danger); color: #fff; }
 
     .content { padding: 24px 28px; display: flex; flex-direction: column; gap: 24px; }
 
     /* KPI Cards */
     .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; }
-    .kpi-card {
-      background: var(--card-bg); padding: 20px; border-radius: 12px;
-      border: 1px solid var(--border); box-shadow: 0 1px 2px rgba(0,0,0,0.03);
-    }
-    .kpi-title { font-size: 0.78rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
-    .kpi-value { font-size: 1.85rem; font-weight: 800; margin: 8px 0 4px; }
-    .kpi-sub { font-size: 0.82rem; color: var(--text-muted); }
-    .progress-bar { width: 100%; height: 7px; background: #e5e7eb; border-radius: 99px; margin-top: 10px; overflow: hidden; }
+    .card { background: var(--card); border-radius: 12px; padding: 18px 20px; border: 1px solid var(--border); box-shadow: 0 1px 2px rgba(0,0,0,0.03); }
+    .kpi-label { font-size: 0.75rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+    .kpi-value { font-size: 1.75rem; font-weight: 700; margin: 6px 0 4px; }
+    .kpi-sub { font-size: 0.82rem; color: var(--muted); }
+    .progress-bar { width: 100%; height: 8px; background: #e2e8f0; border-radius: 99px; overflow: hidden; margin-top: 10px; }
     .progress-fill { height: 100%; background: var(--primary); transition: width 0.3s; }
 
-    /* Permanent Gantt Section */
-    .card {
-      background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border);
-      padding: 20px; box-shadow: 0 1px 2px rgba(0,0,0,0.03);
-    }
-    .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; }
-    .card-title { font-size: 1.05rem; font-weight: 700; }
-    .legend { display: flex; gap: 16px; font-size: 0.82rem; color: var(--text-muted); }
+    /* Gantt Chronologique Mensuel */
+    .gantt-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 12px; }
+    .gantt-controls { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .month-badge { font-size: 1rem; font-weight: 700; min-width: 155px; text-align: center; text-transform: capitalize; color: var(--primary); background: #eff6ff; padding: 6px 12px; border-radius: 8px; border: 1px solid #bfdbfe; }
+    .month-pills { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 12px; }
+    .legend { display: flex; gap: 16px; font-size: 0.82rem; color: var(--muted); }
     .legend span { display: flex; align-items: center; gap: 6px; }
     .dot { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
 
     .gantt-wrapper { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; }
-    .gantt-table { width: 100%; border-collapse: collapse; min-width: 1150px; font-size: 0.82rem; }
-    .gantt-table th, .gantt-table td { border: 1px solid var(--border); padding: 7px 6px; text-align: center; }
-    .gantt-table th { background: #f9fafb; font-weight: 600; color: var(--text-muted); }
-    .gantt-table td.wk-col { text-align: left; padding-left: 12px; font-weight: 600; min-width: 210px; background: #fff; position: sticky; left: 0; z-index: 2; }
-    .gantt-table th.wk-col { text-align: left; padding-left: 12px; position: sticky; left: 0; z-index: 3; }
-    .now-col { background: #eff6ff !important; color: var(--primary) !important; font-weight: 700 !important; }
-    .gantt-cell { position: relative; height: 34px; padding: 0 !important; }
-    .bar-est {
-      position: absolute; top: 6px; left: 2px; right: 2px; height: 9px;
-      background: #93c5fd; border-radius: 4px;
-    }
-    .bar-real {
-      position: absolute; bottom: 6px; left: 2px; height: 9px;
-      background: var(--success); border-radius: 4px; transition: width 0.3s;
-    }
+    table.gantt { width: 100%; border-collapse: collapse; min-width: 720px; font-size: 0.84rem; }
+    table.gantt th, table.gantt td { border-bottom: 1px solid var(--border); border-right: 1px solid #f1f5f9; padding: 10px 8px; text-align: center; }
+    table.gantt th { background: #f8fafc; font-weight: 600; color: var(--text); }
+    table.gantt th small { display: block; font-weight: 400; color: var(--muted); font-size: 0.74rem; margin-top: 2px; }
+    table.gantt td.wk-col { text-align: left; padding-left: 14px; font-weight: 600; width: 280px; min-width: 240px; background: #fff; }
+    .gantt-track { position: relative; height: 24px; background: #f8fafc; border-radius: 6px; overflow: hidden; border: 1px solid #e2e8f0; }
+    .bar-plan { position: absolute; top: 3px; height: 7px; background: #60a5fa; border-radius: 4px; }
+    .bar-real { position: absolute; bottom: 3px; height: 7px; background: var(--success); border-radius: 4px; }
+    .today-line { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--danger); z-index: 3; }
 
-    /* Views */
-    .view-section { display: none; flex-direction: column; gap: 20px; }
-    .view-section.active { display: flex; }
+    /* Tabs */
+    .tab-section { display: none; }
+    .tab-section.active { display: block; }
 
-    /* WK & SE Cards */
-    .wk-card { border: 1px solid var(--border); border-radius: 10px; background: #fff; overflow: hidden; }
-    .wk-header {
-      padding: 14px 18px; background: #f9fafb; border-bottom: 1px solid var(--border);
-      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;
-    }
-    .wk-meta { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-    .badge { padding: 3px 9px; border-radius: 99px; font-size: 0.75rem; font-weight: 700; }
-    .badge-done { background: #d1fae5; color: #065f46; }
-    .badge-wip { background: #fef3c7; color: #92400e; }
-    .badge-todo { background: #e5e7eb; color: #374151; }
+    /* Workshops & Sequences */
+    .wk-card { margin-bottom: 16px; }
+    .wk-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+    .wk-title-input { font-size: 1.02rem; font-weight: 700; border: 1px solid transparent; padding: 4px 8px; border-radius: 6px; width: 320px; max-width: 100%; }
+    .wk-title-input:hover, .wk-title-input:focus { border-color: var(--border); background: #f8fafc; outline: none; }
+    .badge { padding: 4px 10px; border-radius: 99px; font-size: 0.78rem; font-weight: 600; }
+    .badge-done { background: #dcfce7; color: #166534; }
+    .badge-wip { background: #dbeafe; color: #1e40af; }
+    .badge-todo { background: #f1f5f9; color: #475569; }
 
     .se-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
-    .se-table th, .se-table td { padding: 10px 14px; border-bottom: 1px solid var(--border); text-align: left; }
-    .se-table th { color: var(--text-muted); font-weight: 600; font-size: 0.8rem; }
-    input[type="number"], input[type="text"], select, textarea {
-      padding: 6px 8px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 0.85rem;
-    }
-    input.pct-input { width: 68px; text-align: right; font-weight: 700; }
-    input.hours-input { width: 65px; text-align: right; }
-
-    /* Kanban */
-    .kanban-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; }
-    .kanban-col { background: #e5e7eb; padding: 14px; border-radius: 10px; display: flex; flex-direction: column; gap: 10px; }
-    .kanban-item { background: #fff; padding: 12px; border-radius: 8px; border: 1px solid var(--border); font-size: 0.88rem; }
+    .se-table th { text-align: left; padding: 8px; border-bottom: 1px solid var(--border); color: var(--muted); font-size: 0.76rem; text-transform: uppercase; }
+    .se-table td { padding: 8px; border-bottom: 1px solid #f1f5f9; }
+    .se-input { border: 1px solid var(--border); border-radius: 6px; padding: 5px 8px; font-size: 0.88rem; }
+    .se-pct { width: 68px; text-align: right; font-weight: 600; }
 
     /* Modal */
-    .modal-backdrop {
-      position: fixed; inset: 0; background: rgba(0,0,0,0.5);
-      display: none; align-items: center; justify-content: center; z-index: 50; padding: 16px;
-    }
+    .modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.5); justify-content: center; align-items: center; z-index: 50; padding: 16px; }
     .modal-backdrop.open { display: flex; }
-    .modal { background: #fff; border-radius: 12px; width: 100%; max-width: 480px; padding: 22px; display: flex; flex-direction: column; gap: 14px; }
-    .form-group { display: flex; flex-direction: column; gap: 5px; font-size: 0.85rem; font-weight: 600; }
+    .modal { background: #fff; border-radius: 12px; width: 100%; max-width: 480px; padding: 24px; display: flex; flex-direction: column; gap: 14px; }
+    .form-group { display: flex; flex-direction: column; gap: 5px; }
+    .form-group label { font-size: 0.85rem; font-weight: 600; }
+    .form-group input, .form-group select, .form-group textarea { padding: 9px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.9rem; }
 
-    @media (max-width: 820px) {
+    /* Journal */
+    .log-item { border-left: 3px solid var(--primary); padding: 10px 14px; background: #f8fafc; border-radius: 0 8px 8px 0; margin-bottom: 10px; }
+
+    @media (max-width: 768px) {
       body { flex-direction: column; }
-      .sidebar { width: 100%; }
-      .nav { flex-direction: row; overflow-x: auto; }
+      aside { width: 100%; flex-direction: row; overflow-x: auto; padding: 10px; align-items: center; }
+      .brand { margin-bottom: 0; margin-right: 12px; }
+      nav { flex-direction: row; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Sidebar -->
-  <aside class="sidebar">
-    <div class="brand">
-      <span class="brand-badge">AI</span>
-      <span>SuiviFormation</span>
-    </div>
-    <nav class="nav">
-      <button class="nav-btn active" onclick="switchView('dashboard', this)">📊 Tableau de bord</button>
-      <button class="nav-btn" onclick="switchView('chapters', this)">📚 14 WK & Séquences (SE)</button>
-      <button class="nav-btn" onclick="switchView('kanban', this)">📋 Vue Kanban</button>
-      <button class="nav-btn" onclick="switchView('journal', this)">📝 Journal & Séances</button>
-      <button class="nav-btn" onclick="switchView('backup', this)">💾 Sauvegarde JSON</button>
+  <aside>
+    <div class="brand"><span class="brand-badge">IA</span> SuiviFormation</div>
+    <nav>
+      <button class="nav-btn active" onclick="switchTab('dashboard', this)">🏠 Tableau de bord</button>
+      <button class="nav-btn" onclick="switchTab('workshops', this)">📚 14 Workshops (WK)</button>
+      <button class="nav-btn" onclick="switchTab('journal', this)">📝 Journal & Séances</button>
+      <button class="nav-btn" onclick="switchTab('backup', this)">💾 Sauvegarde JSON</button>
     </nav>
   </aside>
 
-  <!-- Main -->
-  <div class="main">
-    <header class="topbar">
+  <main>
+    <header>
       <div>
-        <h1>Pilotage de ma formation IA (460 h)</h1>
-        <p>Du 09/11/2026 au 09/05/2027 (26 semaines) • Base 18 h/semaine • Répartition SE : 30% Cours / 40% Projet / 20% Finalisation / 10% Livrable</p>
+        <h1>Pilotage de ma formation IA</h1>
+        <p>Du 09/11/2026 au 09/05/2027 • 14 Workshops (WK) • Objectif 18 h/semaine (soirs & week-ends)</p>
       </div>
-      <div style="display:flex; gap:10px;">
-        <button class="btn-primary" onclick="openSessionModal()">+ Saisir une séance</button>
-      </div>
+      <button class="btn" onclick="openModal()">+ Saisir une séance</button>
     </header>
 
     <div class="content">
-      <!-- KPI Cards (Always visible) -->
-      <section class="kpi-grid">
-        <div class="kpi-card">
-          <div class="kpi-title">Heures réalisées</div>
+      <!-- KPIs -->
+      <div class="kpi-grid">
+        <div class="card">
+          <div class="kpi-label">Heures réalisées</div>
           <div class="kpi-value" id="kpi-hours">0 h</div>
           <div class="kpi-sub" id="kpi-hours-sub">460 h restantes sur 460 h</div>
           <div class="progress-bar"><div class="progress-fill" id="kpi-hours-bar" style="width:0%"></div></div>
         </div>
-        <div class="kpi-card">
-          <div class="kpi-title">Avancement global</div>
+        <div class="card">
+          <div class="kpi-label">Avancement global</div>
           <div class="kpi-value" id="kpi-pct">0 %</div>
-          <div class="kpi-sub" id="kpi-se-sub">0 / 84 séquences (SE) terminées</div>
-          <div class="progress-bar"><div class="progress-fill" id="kpi-pct-bar" style="width:0%; background: var(--success);"></div></div>
+          <div class="kpi-sub" id="kpi-seq-sub">0 / 84 séquences terminées</div>
+          <div class="progress-bar"><div class="progress-fill" id="kpi-pct-bar" style="width:0%"></div></div>
         </div>
-        <div class="kpi-card">
-          <div class="kpi-title">Rythme cible</div>
+        <div class="card">
+          <div class="kpi-label">Rythme cible</div>
           <div class="kpi-value">18,0 h/sem</div>
+          <div class="kpi-sub">Base hebdo (congés 09-15/11 inclus)</div>
+        </div>
+        <div class="card">
+          <div class="kpi-label">Statut Planning</div>
